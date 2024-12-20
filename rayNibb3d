@@ -1,0 +1,109 @@
+<html> 
+ 
+<head> 
+ <title>pocketComet2</title> 
+ 
+ <style> 
+  body { 
+   margin: 0; 
+   overflow: hidden; 
+  } 
+   
+  canvas { 
+   background: red; 
+  } 
+ </style> 
+</head> 
+ 
+<body> 
+<script src="https://cdn.jsdelivr.net/npm/three@0.124.0/build/three.js"></script>
+ <canvas id="myCanvas"></canvas> 
+ 
+ <script src="three.js"></script> 
+ <script> 
+  //RENDERER 
+  var offsetx =-64;
+  var offsety =100;
+  var renderer = new THREE.WebGLRenderer( 
+  { 
+   canvas: document.getElementById('myCanvas'), 
+   antialias: true 
+  }); 
+  const raycaster = new THREE.Raycaster()
+  const pointer = new THREE.Vector2();
+  renderer.setClearColor(0x0000ff); 
+  //0x0000ff => indicate blue color 
+ 
+  renderer.setPixelRatio(window.devicePixelRatio); 
+  renderer.setSize(window.innerWidth, window.innerHeight); 
+ 
+  //CAMERA 
+  var camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 0.1, 3000); 
+  // var camera = new THREE.OrthographicCamera(window.innerWidth / -2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / -2, 0.1, 3000); 
+ 
+  //SCENE 
+  var scene = new THREE.Scene(); 
+ 
+  //LIGHTS 
+  var light = new THREE.AmbientLight(0xffffff, 0.5); 
+  scene.add(light); 
+ 
+  //Point light => shading the front face 
+  var light1 = new THREE.PointLight(0xffffff, 0.5); 
+  scene.add(light1); 
+ 
+  //OBJECT 
+  //CircleGeometry(radious,no.of segment,height segment) 
+  //Default value no.of segment=0   segment = 0 
+  var geometry = new THREE.CircleGeometry(1,10); 
+ 
+  var material = new THREE.MeshLambertMaterial( 
+  { 
+   color: 0xF3FFE2 
+  }); 
+ for (let j =0; j < 100; j++){
+ for (let i = 0; i < 100; i++) {
+  var mesh = new THREE.Mesh(geometry, material);
+  mesh.position.set(i+offsetx,offsety, -400); 
+  scene.add(mesh); 
+ }
+ offsety -=1;
+ }
+  //RENDER LOOP 
+  requestAnimationFrame(render); 
+ 
+  function render() 
+  { 
+   mesh.rotation.x = 0.0;
+   mesh.rotation.y = 0.0; 
+   raycaster.setFromCamera( pointer, camera );
+
+	// calculate objects intersecting the picking ray
+	const intersects = raycaster.intersectObjects( scene.children );
+
+	for ( let i = 0; i < intersects.length; i ++ ) {
+
+		intersects[ i ].object.material.color.set( 0xff0000 );
+
+	}
+
+ 
+   renderer.render(scene, camera); 
+   requestAnimationFrame(render); 
+  } 
+  function onPointerMove(event) {
+
+  // calculate pointer position in normalized device coordinates
+  // (-1 to +1) for both components
+
+  pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
+  pointer.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+}
+window.addEventListener('pointermove', onPointerMove);
+
+window.requestAnimationFrame(render);
+ </script> 
+</body> 
+ 
+</html>
